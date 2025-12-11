@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dispenser.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dispenser.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: resp
+      protocol: TCP
+      name: resp
+  selector:
+    {{- include "dispenser.selectorLabels" . | nindent 4 }}

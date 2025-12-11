@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "redis.fullname" . }}-test-connection"
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "redis.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  template:
+    spec:
+      containers:
+        - name: redis-cli
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          command:
+            - redis-cli
+            - -h
+            - {{ include "redis.fullname" . }}
+            - -p
+            - {{ .Values.service.port }}'
+            - PING
+      restartPolicy: OnFailure
+  backoffLimit: 10
